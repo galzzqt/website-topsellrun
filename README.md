@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TopsellRun
 
-## Getting Started
+Website event TopsellRun (Next.js 16 App Router + Tailwind v4 + Framer Motion + MongoDB + Cloudinary) dengan panel admin CMS di `/admin`.
 
-First, run the development server:
+## Setup
 
 ```bash
+cp .env.example .env.local   # isi MONGODB_URI, SESSION_SECRET, CLOUDINARY_*
+npm install
+npm run db                   # MongoDB lokal untuk development (terminal terpisah, biarkan jalan)
+                             # → MONGODB_URI=mongodb://127.0.0.1:27018, data di .data/mongo
+node --env-file=.env.local scripts/create-admin.mjs admin@topsell.id "password-min-10-karakter"
+node --env-file=.env.local scripts/seed-sponsors.mjs   # sponsor awal (logo di public/images/sponsors)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Situs publik: `http://localhost:3000` · Admin: `http://localhost:3000/admin`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cara kerja
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Semua konten (status event, hero, venue, jersey/medali, video, festival, ticker, CTA daftar, kontak) disimpan di satu dokumen `siteConfig` dan diedit di tab **Event & Konten**. Default awal ada di `src/lib/content.ts`.
+- **Status `upcoming`** → hero countdown + tombol daftar. **Status `completed`** → hero recap + banner "See you next run"; tombol daftar berubah jadi "Lihat Next Event" hanya jika tanggal event berikutnya diisi.
+- Sponsor & galeri: koleksi `sponsors` / `gallery`, gambar di-upload ke Cloudinary (maks 5MB, tipe gambar saja). Tiap item ditandai `edition` agar bisa difilter per tahun / disambung ke sistem BIB nanti.
+- Setiap simpan dari admin memanggil `revalidatePath("/")` → situs publik langsung ter-update tanpa deploy.
+- Auth: satu role admin, session token bertanda tangan HMAC di cookie httpOnly; dicek di `src/proxy.ts` **dan** di setiap route handler admin.
+- Section Instagram memakai embed resmi Instagram (`embed.js`, tanpa token/API). Admin cukup menempel link post/reel; link non-Instagram otomatis dibuang saat simpan.
+- Cek sanitizer konten: `node --test scripts/check-content.mjs`
+- Klik "Daftar Sekarang" mendorong event `cta_daftar_click` ke `window.dataLayer` (siap dipakai GTM/GA4).
 
-## Learn More
+## Deploy (Dokploy)
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Pakai `Dockerfile` (output `standalone`). Set env yang sama dengan `.env.example`. Buat admin di container:
+`node scripts/create-admin.mjs <email> <password>`.
