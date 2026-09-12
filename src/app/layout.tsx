@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
-import { Anton, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { ScrollToTop } from "@/components/client";
 import "./globals.css";
 
-const anton = Anton({ variable: "--font-anton", weight: "400", subsets: ["latin"] });
-const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"] });
+// Self-hosted: the woff2 files (latin subset) live in ./fonts, no fonts.gstatic.com fetch at build time.
+const anton = localFont({
+  src: "./fonts/Anton-Regular.woff2",
+  variable: "--font-anton",
+  weight: "400",
+  display: "swap",
+});
+const jakarta = localFont({
+  src: "./fonts/PlusJakartaSans-Variable.woff2",
+  variable: "--font-jakarta",
+  weight: "200 800",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "TopsellRun — Run Together, Celebrate Together",
