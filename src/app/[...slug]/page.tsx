@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import { MotionRoot } from "@/components/client";
 import * as S from "@/components/sections";
 import type { SiteConfig, Tier } from "@/lib/content";
-import { getContent, type Sponsor } from "@/lib/db";
+import { getContent, type Photo, type Sponsor } from "@/lib/db";
 
 // Sub-pages of the "Tentang Event" and "Kerjasama" menus (see NAV_MENU). Content comes from the same CMS config as Home.
-type Data = { c: SiteConfig; sponsors: Sponsor[]; tiers: Tier[] };
+type Data = { c: SiteConfig; sponsors: Sponsor[]; tiers: Tier[]; gallery: Photo[] };
 const PAGES: Record<string, { trail: string[]; render: (d: Data) => React.ReactNode }> = {
+  galeri: { trail: ["Gallery"], render: ({ c, gallery }) => <S.Gallery c={c} photos={gallery} /> },
   "race-category": { trail: ["Tentang Event", "Race Category"], render: ({ c }) => <S.RaceCategory c={c} /> },
   "medal-jersey-racepack": {
     trail: ["Tentang Event", "Medal, Jersey & Racepack"],
@@ -60,14 +61,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function SubPage(props: Props) {
   const { key, page } = await pageFor(props);
   if (!page) notFound();
-  const { config: c, sponsors, tiers } = await getContent();
+  const { config: c, sponsors, tiers, gallery } = await getContent();
   return (
     <MotionRoot>
       <div aria-hidden className="majapahit-bg" />
       <S.Navbar c={c} path={`/${key}`} />
       <main>
         <S.Breadcrumb trail={page.trail} />
-        {page.render({ c, sponsors, tiers })}
+        {page.render({ c, sponsors, tiers, gallery })}
         <S.Ticker c={c} />
       </main>
       <S.Footer c={c} />

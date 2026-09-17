@@ -24,12 +24,12 @@ export default async function Home() {
       <main id="top">
         {c.banners.length > 0 && <BannerCarousel banners={c.banners} />}
         <S.Hero c={c} />
+        <S.CheckRegistration c={c} photo={gallery[0]} />
         <S.Ticker c={c} />
         <S.About c={c} />
-        <S.Venue c={c} />
-        <S.Merch c={c} />
+        <S.VenueKit c={c} />
         <S.Achievements c={c} />
-        <S.Gallery c={c} photos={gallery} />
+        <S.Gallery c={c} photos={gallery} preview />
         <S.Video c={c} />
         <S.Instagram c={c} />
         <S.Festival c={c} />

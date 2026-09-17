@@ -88,6 +88,87 @@ export function BannerCarousel({ banners }: { banners: SiteConfig["banners"] }) 
   );
 }
 
+type GalleryPhoto = { _id: string; image: string; caption: string };
+
+// Grid + lightbox. Native <dialog> gives Esc/focus trap; scroll-snap gives swipe, arrows/keys just scroll it.
+export function GalleryGrid({ photos, alt, moreHref }: { photos: GalleryPhoto[]; alt: string; moreHref?: string }) {
+  const dlg = useRef<HTMLDialogElement>(null);
+  const track = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const n = photos.length;
+
+  const open = (i: number) => {
+    dlg.current?.showModal();
+    track.current?.scrollTo({ left: i * track.current.clientWidth });
+    setActive(i);
+  };
+  const go = (k: number) => {
+    slideTo(track.current, k, n);
+    setActive(((k % n) + n) % n);
+  };
+  const nav = "absolute top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/30";
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {photos.map((p, i) => {
+          const big = i % 7 === 0;
+          const last = moreHref && i === n - 1;
+          return (
+            <Reveal key={p._id} delay={(i % 4) * 0.05} className={big ? "col-span-2 row-span-2" : ""}>
+              <figure className="group relative aspect-square h-full overflow-hidden rounded-2xl bg-line">
+                <Image src={p.image} alt={p.caption || alt} fill sizes={big ? "(min-width:768px) 50vw, 100vw" : "(min-width:768px) 25vw, 50vw"} className="object-cover transition duration-500 group-hover:scale-105" />
+                {last ? (
+                  <a href={moreHref} className="absolute inset-0 flex items-center justify-center bg-black/55 transition hover:bg-black/65">
+                    <span className="rounded-full bg-white px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink">Lihat Semua</span>
+                  </a>
+                ) : (
+                  <button type="button" onClick={() => open(i)} aria-label={`Perbesar foto ${i + 1}`} className="absolute inset-0 cursor-zoom-in" />
+                )}
+              </figure>
+            </Reveal>
+          );
+        })}
+      </div>
+
+      <dialog
+        ref={dlg}
+        aria-label="Foto galeri"
+        onKeyDown={(e) => (e.key === "ArrowRight" ? go(active + 1) : e.key === "ArrowLeft" ? go(active - 1) : null)}
+        className="fixed inset-0 m-0 h-full max-h-none w-full max-w-none bg-black/95 p-0 backdrop:bg-black/80"
+      >
+        <div
+          ref={track}
+          onScroll={(e) => setActive(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
+          className="flex h-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {photos.map((p, i) => (
+            <div key={p._id} onClick={(e) => e.target === e.currentTarget && dlg.current?.close()} className="relative h-full w-full shrink-0 snap-center p-4 sm:p-16">
+              <div className="pointer-events-none relative h-full w-full">
+                <Image src={p.image} alt={p.caption || alt} fill sizes="100vw" className="object-contain" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="absolute top-5 left-5 text-sm font-semibold text-white/80">{active + 1} / {n}</p>
+        <button type="button" onClick={() => dlg.current?.close()} aria-label="Tutup" className="absolute top-3 right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-2xl text-white hover:bg-white/30">
+          ×
+        </button>
+        {n > 1 && (
+          <>
+            <button type="button" aria-label="Foto sebelumnya" onClick={() => go(active - 1)} className={`${nav} left-3`}>
+              <ChevronLeft className="h-7 w-7" />
+            </button>
+            <button type="button" aria-label="Foto berikutnya" onClick={() => go(active + 1)} className={`${nav} right-3`}>
+              <ChevronRight className="h-7 w-7" />
+            </button>
+          </>
+        )}
+      </dialog>
+    </>
+  );
+}
+
 // Instagram's official embed (no token, no npm wrapper). embed.js swaps each blockquote for an
 // auto-height iframe; the markup goes through innerHTML so React never owns the nodes it replaces.
 // URLs come from instagramPermalink() ([\w-] only), so interpolating them is safe.

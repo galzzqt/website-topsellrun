@@ -1,7 +1,7 @@
 import { ArrowUpRight, CalendarClock, CalendarDays, ChevronDown, ChevronRight, MapPin, Menu, Sparkle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Countdown, CtaButton, InstagramEmbeds, Reveal } from "@/components/client";
+import { Countdown, CtaButton, GalleryGrid, InstagramEmbeds, Reveal } from "@/components/client";
 import Logo from "@/components/Logo";
 import { formatWib, waUrl, youtubeId, type SiteConfig, type Tier } from "@/lib/content";
 import type { Photo, Sponsor } from "@/lib/db";
@@ -51,7 +51,7 @@ const Wrap = ({ id, className = "", children }: { id?: string; className?: strin
 
 type Link2 = { label: string; href: string };
 type MenuItem = { label: string; href?: string; children?: Link2[] };
-// Top-level navbar. "/#galeri" is a Home anchor that also works from sub-pages.
+// Top-level navbar.
 export const NAV_MENU: MenuItem[] = [
   { label: "Home", href: "/" },
   {
@@ -71,7 +71,7 @@ export const NAV_MENU: MenuItem[] = [
       { label: "Media Partner", href: "/kerjasama/media-partner" },
     ],
   },
-  { label: "Gallery", href: "/#galeri" },
+  { label: "Gallery", href: "/galeri" },
 ];
 
 function HomeLogo({ className, priority }: { className?: string; priority?: boolean }) {
@@ -163,34 +163,40 @@ export function Hero({ c }: C) {
       <div className="bg-brand absolute -top-40 -right-40 h-[32rem] w-[32rem] rounded-full opacity-10 blur-3xl" />
       <div className="bg-brand absolute top-1/2 -left-24 h-72 w-72 rounded-full opacity-10 blur-3xl" />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
+      {upcoming && (
+        // Upcoming: title → 5:1 banner → description + categories → date/countdown → buttons
+        <div className="relative mx-auto mb-10 max-w-6xl">
+          <h2 className="font-display text-6xl uppercase leading-[0.9] sm:text-8xl">Upcoming Event</h2>
+          <h1 className="sr-only">{c.event.title || c.event.name}</h1>
+          <div className="relative mt-8 aspect-[5/1] overflow-hidden rounded-[2rem] bg-surface shadow-2xl">
+            {c.event.heroImage ? (
+              <Image src={c.event.heroImage} alt={c.event.title || c.event.name} fill priority={!c.banners.length} sizes="(min-width:1152px) 72rem, 100vw" className="object-cover" />
+            ) : (
+              <Placeholder label={`#${c.event.name.replace(/\s+/g, "")}`} />
+            )}
+          </div>
+        </div>
+      )}
+      <div className={`relative mx-auto grid max-w-6xl items-center gap-12 ${upcoming ? "" : "lg:grid-cols-[1.1fr_1fr]"}`}>
         <div>
           {upcoming ? (
             <>
-              <h2 className="font-display text-6xl uppercase leading-[0.9] sm:text-8xl">Upcoming Event</h2>
-              {c.event.logo && (
-                <div className="relative mt-6 h-8 w-full max-w-md sm:h-11">
-                  <Image src={c.event.logo} alt="" fill sizes="448px" className="object-contain object-left" />
-                </div>
+              {c.event.tagline && <p className="mx-auto max-w-3xl text-center text-lg whitespace-pre-line text-muted">{c.event.tagline}</p>}
+              {c.categories.length > 0 && (
+                <ul className="mt-6 flex flex-wrap justify-center gap-3">
+                  {c.categories.map((cat, i) => (
+                    <li key={cat.name + i} className="rounded-2xl border border-line bg-white px-6 py-3 font-display text-3xl text-brand shadow-sm">{cat.name}</li>
+                  ))}
+                </ul>
               )}
-              {/* h1 = the event itself; the landscape title logo replaces the text when uploaded */}
-              <h1 className="mt-5">
-                {c.event.titleLogo ? (
-                  <span className="relative block h-14 w-full max-w-xl sm:h-20">
-                    <Image src={c.event.titleLogo} alt={c.event.title || c.event.name} fill priority={!c.banners.length} sizes="576px" className="object-contain object-left" />
-                  </span>
-                ) : (
-                  <span className="font-display text-5xl uppercase leading-[0.9] text-brand sm:text-7xl">{c.event.title || c.event.name}</span>
-                )}
-              </h1>
               {c.event.date && (
-                <p className="mt-6 flex items-center gap-3 text-lg font-bold text-brand-red">
+                <p className="mt-10 flex items-center justify-center gap-3 text-lg font-bold text-brand-red">
                   <CalendarDays className="h-6 w-6 shrink-0" />
                   {formatWib(c.event.date)}
                 </p>
               )}
               {c.event.countdownTarget && (
-                <div className="mt-6">
+                <div className="mt-6 flex justify-center">
                   <Countdown target={c.event.countdownTarget} />
                 </div>
               )}
@@ -221,38 +227,21 @@ export function Hero({ c }: C) {
             </>
           )}
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className={`mt-8 flex flex-wrap gap-3 ${upcoming ? "justify-center" : ""}`}>
             {cta && <CtaButton source="hero" href={cta.href} label={cta.label} className={btnBrand} />}
-            {!upcoming && <a href="#galeri" className={btnGhost}>Lihat Galeri</a>}
+            {upcoming ? (
+              <a href={c.venue.mapsUrl || "#venue"} {...(c.venue.mapsUrl && { target: "_blank", rel: "noopener noreferrer" })} className={btnGhost}>
+                Lihat Lokasi <MapPin className="ml-1.5 h-4 w-4" />
+              </a>
+            ) : (
+              <a href="#galeri" className={btnGhost}>Lihat Galeri</a>
+            )}
           </div>
         </div>
 
-        <div className="relative">
-          <div className="bg-brand absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-[2rem]" />
-          {upcoming ? (
-            // Upcoming: the race location card
-            <div className="relative overflow-hidden rounded-[2rem] bg-white shadow-2xl">
-              <div className="relative aspect-[4/3]">
-                {c.venue.image ? (
-                  <Image src={c.venue.image} alt={c.venue.name} fill sizes="(min-width:1024px) 45vw, 100vw" className="object-cover" />
-                ) : (
-                  <Placeholder label={<><MapPin className="h-7 w-7" /> Race Venue</>} />
-                )}
-              </div>
-              <div className="p-7 sm:p-9">
-                <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-brand-red">
-                  <MapPin className="h-4 w-4" /> Lokasi
-                </p>
-                <h2 className="mt-3 font-display text-3xl uppercase sm:text-4xl">{c.venue.name}</h2>
-                {c.venue.address && <p className="mt-3 whitespace-pre-line text-muted">{c.venue.address}</p>}
-                {c.venue.mapsUrl && (
-                  <a href={c.venue.mapsUrl} target="_blank" rel="noopener noreferrer" className={`${btnGhost} mt-6`}>
-                    Buka di Google Maps <ArrowUpRight className="ml-1.5 h-4 w-4" />
-                  </a>
-                )}
-              </div>
-            </div>
-          ) : (
+        {!upcoming && (
+          <div className="relative">
+            <div className="bg-brand absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-[2rem]" />
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-surface shadow-2xl">
               {c.event.heroImage ? (
                 <Image src={c.event.heroImage} alt={c.event.name} fill priority={!c.banners.length} sizes="(min-width:1024px) 45vw, 100vw" className="object-cover" />
@@ -260,9 +249,48 @@ export function Hero({ c }: C) {
                 <Placeholder label={`#${c.event.name.replace(/\s+/g, "")}`} />
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+    </section>
+  );
+}
+
+const CHECK_URL = "https://dorun.id/ticket.html";
+
+const CHECK_STEPS = ["Buka halaman cek tiket", "Masukkan data pendaftaran kamu", "Lihat status kepesertaan kamu"];
+
+// Ticket-stub card: medal stub | perforation | info.
+export function CheckRegistration({ c, photo }: C & { photo?: Photo }) {
+  const name = c.event.title || c.event.name;
+  return (
+    <section className="px-5 py-10">
+      <Reveal className="mx-auto grid max-w-5xl rounded-[2rem] border border-line bg-white shadow-xl md:grid-cols-[18rem_1fr]">
+        <div className="relative aspect-square overflow-hidden rounded-t-[2rem] md:aspect-auto md:rounded-l-[2rem] md:rounded-tr-none">
+          <Image src={photo?.image || "/images/medal-square.webp"} alt={photo?.caption || `Peserta ${name}`} fill sizes="(min-width:768px) 18rem, 100vw" className="object-cover" />
+        </div>
+        <div className="relative border-t-2 border-dashed border-line p-8 sm:p-10 md:border-t-0 md:border-l-2">
+          {/* perforation notches */}
+          <span className="absolute -top-4 -left-4 hidden h-8 w-8 rounded-full border-b border-line bg-[#fff6f0] md:block" />
+          <span className="absolute -bottom-4 -left-4 hidden h-8 w-8 rounded-full border-t border-line bg-[#fff6f0] md:block" />
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-brand-red">Cek Kepesertaan</p>
+          <h2 className="mt-3 font-display text-4xl uppercase leading-none sm:text-5xl">Sudah Terdaftar?</h2>
+          <p className="mt-4 text-muted">
+            Pastikan nama kamu sudah tercatat sebagai peserta <b className="text-ink">{name}</b>.
+          </p>
+          <ol className="mt-6 space-y-3">
+            {CHECK_STEPS.map((s, i) => (
+              <li key={s} className="flex items-center gap-3 font-semibold">
+                <span className="bg-brand flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs text-white">{i + 1}</span>
+                {s}
+              </li>
+            ))}
+          </ol>
+          <a href={CHECK_URL} target="_blank" rel="noopener noreferrer" className={`${btnGhost} mt-8`}>
+            Cek Peserta Terdaftar <ArrowUpRight className="ml-1.5 h-4 w-4" />
+          </a>
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -343,11 +371,45 @@ function LocationCard({ v, placeholder, children }: { v: Place; placeholder: str
   );
 }
 
-export function Venue({ c }: C) {
+// Home page: venue + jersey + medal in one section. Images come from admin (2:1 crop),
+// with the bundled /public/images banners as fallback until they're uploaded.
+const kitBanners = ["/images/jersey-2x1.webp", "/images/medal-2x1.webp"];
+
+export function VenueKit({ c }: C) {
+  const v = c.venue;
   return (
     <Wrap id="venue" className="logo-bg bg-surface">
-      <Heading eyebrow="Info Venue" title="Lokasi Race" />
-      <LocationCard v={c.venue} placeholder="Race Venue" />
+      <IntroHeading eyebrow="Info Venue & Race Kit" title="Venue, Jersey & Medali" text={c.merch.text} />
+      <Reveal delay={0.1}>
+        <figure className="mt-12 overflow-hidden rounded-[2rem] bg-white shadow-sm">
+          <div className="relative aspect-[2/1]">
+            <Image src={v.image || "/images/venue-2x1.webp"} alt={v.name} fill sizes="(min-width:1152px) 72rem, 100vw" className="object-cover" />
+          </div>
+          <figcaption className="flex flex-wrap items-center justify-between gap-6 p-6 sm:p-8">
+            <div>
+              <h3 className="font-display text-3xl uppercase sm:text-4xl">{v.name}</h3>
+              {v.address && <p className="mt-2 whitespace-pre-line text-muted">{v.address}</p>}
+            </div>
+            {v.mapsUrl && (
+              <a href={v.mapsUrl} target="_blank" rel="noopener noreferrer" className={btnGhost}>
+                Buka di Google Maps <ArrowUpRight className="ml-1.5 h-4 w-4" />
+              </a>
+            )}
+          </figcaption>
+        </figure>
+      </Reveal>
+      <div className="mt-6 grid gap-6 sm:grid-cols-2">
+        {kitBanners.map((fallback, i) => (
+          <Reveal key={fallback} delay={i * 0.1}>
+            <figure className="group overflow-hidden rounded-[2rem] bg-white shadow-sm">
+              <div className="relative aspect-[2/1] overflow-hidden">
+                <Image src={c.merchItems[i]?.image || fallback} alt={c.merchItems[i]?.caption || (i ? "Medali" : "Jersey")} fill sizes="(min-width:640px) 50vw, 100vw" className="object-cover transition duration-500 group-hover:scale-105" />
+              </div>
+              <figcaption className="px-6 py-5 font-display text-2xl uppercase">{c.merchItems[i]?.caption || (i ? "Medali" : "Jersey")}</figcaption>
+            </figure>
+          </Reveal>
+        ))}
+      </div>
     </Wrap>
   );
 }
@@ -552,27 +614,14 @@ export function Achievements({ c }: C) {
   );
 }
 
-export function Gallery({ c, photos }: C & { photos: Photo[] }) {
+// preview: Home shows the first photos with a "Lihat Semua" tile linking to /galeri.
+export function Gallery({ c, photos, preview }: C & { photos: Photo[]; preview?: boolean }) {
   return (
     <Wrap id="galeri" className="logo-bg bg-surface">
       <Heading eyebrow="Galeri" title="Momen Peserta" />
       <div className="mt-10">
         {photos.length ? (
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {photos.map((p, i) => (
-              <Reveal key={p._id} delay={(i % 4) * 0.05} className={i % 7 === 0 ? "col-span-2 row-span-2" : ""}>
-                <figure className="relative aspect-square h-full overflow-hidden rounded-2xl bg-line">
-                  <Image
-                    src={p.image}
-                    alt={p.caption || `Foto ${c.event.name}`}
-                    fill
-                    sizes={i % 7 === 0 ? "(min-width:768px) 50vw, 100vw" : "(min-width:768px) 25vw, 50vw"}
-                    className="object-cover transition duration-500 hover:scale-105"
-                  />
-                </figure>
-              </Reveal>
-            ))}
-          </div>
+          <GalleryGrid photos={preview ? photos.slice(0, 10) : photos} alt={`Foto ${c.event.name}`} moreHref={preview ? "/galeri" : undefined} />
         ) : (
           <Empty>
             <p className="font-display text-2xl uppercase text-ink">Galeri segera hadir</p>
