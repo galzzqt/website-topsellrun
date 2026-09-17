@@ -42,24 +42,19 @@ const PAGES: Record<string, { trail: string[]; render: (d: Data) => React.ReactN
   },
 };
 
-export const revalidate = 300;
-export const dynamicParams = false; // anything not in PAGES → 404
-export const generateStaticParams = () => Object.keys(PAGES).map((k) => ({ slug: k.split("/") }));
+// Route files: app/[slug] and app/kerjasama/[slug]. Not a [...slug] catch-all: Hostinger's deploy drops
+// folders with "..." in the name, which made every sub-page 404 in production.
+export const subPageKeys = (prefix = "") =>
+  Object.keys(PAGES).filter((k) => k.startsWith(prefix) && !k.slice(prefix.length).includes("/")).map((k) => k.slice(prefix.length));
 
-type Props = PageProps<"/[...slug]">;
-const pageFor = async (props: Props) => {
-  const key = (await props.params).slug.join("/");
-  return { key, page: PAGES[key] };
-};
-
-export async function generateMetadata(props: Props): Promise<Metadata> {
-  const { page } = await pageFor(props);
+export async function subPageMetadata(key: string): Promise<Metadata> {
+  const page = PAGES[key];
   const { config: c } = await getContent();
   return page ? { title: `${page.trail.at(-1)} — ${c.event.name}` } : {};
 }
 
-export default async function SubPage(props: Props) {
-  const { key, page } = await pageFor(props);
+export async function SubPage({ pageKey: key }: { pageKey: string }) {
+  const page = PAGES[key];
   if (!page) notFound();
   const { config: c, sponsors, tiers, gallery } = await getContent();
   return (
