@@ -116,7 +116,7 @@ export function GalleryGrid({ photos, alt, moreHref }: { photos: GalleryPhoto[];
           const last = moreHref && i === n - 1;
           return (
             <Reveal key={p._id} delay={(i % 4) * 0.05} className={big ? "col-span-2 row-span-2" : ""}>
-              <figure className="group relative aspect-square h-full overflow-hidden rounded-2xl bg-line">
+              <figure className="group relative aspect-square h-full overflow-hidden rounded-xl sm:rounded-2xl bg-line">
                 <Image src={p.image} alt={p.caption || alt} fill sizes={big ? "(min-width:768px) 50vw, 100vw" : "(min-width:768px) 25vw, 50vw"} className="object-cover transition duration-500 group-hover:scale-105" />
                 {last ? (
                   <a href={moreHref} className="absolute inset-0 flex items-center justify-center bg-black/55 transition hover:bg-black/65">
@@ -179,7 +179,7 @@ export function InstagramEmbeds({ urls }: { urls: string[] }) {
         {urls.map((u, i) => (
           <div
             key={`${i}-${u}`}
-            className="overflow-hidden rounded-2xl bg-white shadow-sm [&_iframe]:!min-w-0"
+            className="overflow-hidden rounded-xl sm:rounded-2xl bg-white shadow-sm [&_iframe]:!min-w-0"
             dangerouslySetInnerHTML={{
               __html: `<blockquote class="instagram-media" data-instgrm-permalink="${u}?utm_source=ig_embed" data-instgrm-version="14" style="background:#fff;border:0;margin:0;max-width:100%;min-width:0;padding:0;width:100%"><a href="${u}" target="_blank" rel="noopener noreferrer" style="display:block;padding:2rem;text-align:center;font-weight:600;color:#e3122c">Lihat postingan ini di Instagram</a></blockquote>`,
             }}
@@ -271,7 +271,7 @@ export function Countdown({ target }: { target: string }) {
       {UNITS.map(([label, secs, mod]) => {
         const v = Math.floor(left / secs) % mod;
         return (
-          <div key={label} className="w-[4.5rem] rounded-2xl border border-line bg-white py-3 text-center shadow-sm sm:w-24">
+          <div key={label} className="w-[4.5rem] rounded-xl sm:rounded-2xl border border-line bg-white py-3 text-center shadow-sm sm:w-24">
             <div className="font-display text-3xl tabular-nums text-brand-red sm:text-5xl">
               {now === null ? "--" : String(v).padStart(2, "0")}
             </div>

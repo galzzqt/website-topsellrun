@@ -30,7 +30,7 @@ function Heading({ eyebrow, title, center, light }: { eyebrow: string; title: st
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-3xl border-2 border-dashed border-line bg-white px-6 py-14 text-center text-muted">{children}</div>
+    <div className="rounded-2xl sm:rounded-3xl border-2 border-dashed border-line bg-white px-6 py-14 text-center text-muted">{children}</div>
   );
 }
 
@@ -168,7 +168,7 @@ export function Hero({ c }: C) {
         <div className="relative mx-auto mb-10 max-w-6xl">
           <h2 className="font-display text-6xl uppercase leading-[0.9] sm:text-8xl">Upcoming Event</h2>
           <h1 className="sr-only">{c.event.title || c.event.name}</h1>
-          <div className="relative mt-8 aspect-[5/1] overflow-hidden rounded-[2rem] bg-surface shadow-2xl">
+          <div className="relative mt-8 aspect-[5/1] overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-surface shadow-2xl">
             {c.event.heroImage ? (
               <Image src={c.event.heroImage} alt={c.event.title || c.event.name} fill priority={!c.banners.length} sizes="(min-width:1152px) 72rem, 100vw" className="object-cover" />
             ) : (
@@ -185,7 +185,7 @@ export function Hero({ c }: C) {
               {c.categories.length > 0 && (
                 <ul className="mt-6 flex flex-wrap justify-center gap-3">
                   {c.categories.map((cat, i) => (
-                    <li key={cat.name + i} className="rounded-2xl border border-line bg-white px-6 py-3 font-display text-3xl text-brand shadow-sm">{cat.name}</li>
+                    <li key={cat.name + i} className="rounded-xl sm:rounded-2xl border border-line bg-white px-6 py-3 font-display text-3xl text-brand shadow-sm">{cat.name}</li>
                   ))}
                 </ul>
               )}
@@ -241,8 +241,8 @@ export function Hero({ c }: C) {
 
         {!upcoming && (
           <div className="relative">
-            <div className="bg-brand absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-[2rem]" />
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-surface shadow-2xl">
+            <div className="bg-brand absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-[1.25rem] sm:rounded-[2rem]" />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-surface shadow-2xl">
               {c.event.heroImage ? (
                 <Image src={c.event.heroImage} alt={c.event.name} fill priority={!c.banners.length} sizes="(min-width:1024px) 45vw, 100vw" className="object-cover" />
               ) : (
@@ -265,8 +265,8 @@ export function CheckRegistration({ c, photo }: C & { photo?: Photo }) {
   const name = c.event.title || c.event.name;
   return (
     <section className="px-5 py-10">
-      <Reveal className="mx-auto grid max-w-5xl rounded-[2rem] border border-line bg-white shadow-xl md:grid-cols-[18rem_1fr]">
-        <div className="relative aspect-square overflow-hidden rounded-t-[2rem] md:aspect-auto md:rounded-l-[2rem] md:rounded-tr-none">
+      <Reveal className="mx-auto grid max-w-5xl rounded-[1.25rem] sm:rounded-[2rem] border border-line bg-white shadow-xl md:grid-cols-[18rem_1fr]">
+        <div className="relative aspect-square overflow-hidden rounded-t-[1.25rem] sm:rounded-t-[2rem] md:aspect-auto md:rounded-l-[2rem] md:rounded-tr-none">
           <Image src={photo?.image || "/images/medal-square.webp"} alt={photo?.caption || `Peserta ${name}`} fill sizes="(min-width:768px) 18rem, 100vw" className="object-cover" />
         </div>
         <div className="relative border-t-2 border-dashed border-line p-8 sm:p-10 md:border-t-0 md:border-l-2">
@@ -338,7 +338,7 @@ function CategoryGrid({ c, cols = "sm:grid-cols-2" }: C & { cols?: string }) {
     <div className={`grid gap-4 ${cols}`}>
       {c.categories.map((cat, i) => (
         <Reveal key={cat.name + i} delay={i * 0.08}>
-          <div className="group h-full rounded-3xl border border-line bg-white p-7 transition hover:-translate-y-1 hover:border-brand-red hover:shadow-xl">
+          <div className="group h-full rounded-2xl sm:rounded-3xl border border-line bg-white p-7 transition hover:-translate-y-1 hover:border-brand-red hover:shadow-xl">
             <div className="font-display text-6xl text-brand">{cat.name}</div>
             <p className="mt-3 whitespace-pre-line text-muted">{cat.desc}</p>
           </div>
@@ -352,7 +352,7 @@ type Place = { name: string; address: string; mapsUrl: string; image: string };
 function LocationCard({ v, placeholder, children }: { v: Place; placeholder: string; children?: React.ReactNode }) {
   return (
     <Reveal delay={0.1}>
-      <div className="mt-10 grid overflow-hidden rounded-[2rem] bg-white shadow-sm md:grid-cols-2">
+      <div className="mt-10 grid overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-white shadow-sm md:grid-cols-2">
         <div className="relative aspect-video md:aspect-auto md:min-h-80">
           {v.image ? <Image src={v.image} alt={v.name} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" /> : <Placeholder label={<><MapPin className="h-7 w-7" /> {placeholder}</>} />}
         </div>
@@ -381,7 +381,7 @@ export function VenueKit({ c }: C) {
     <Wrap id="venue" className="logo-bg bg-surface">
       <IntroHeading eyebrow="Info Venue & Race Kit" title="Venue, Jersey & Medali" text={c.merch.text} />
       <Reveal delay={0.1}>
-        <figure className="mt-12 overflow-hidden rounded-[2rem] bg-white shadow-sm">
+        <figure className="mt-12 overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-white shadow-sm">
           <div className="relative aspect-[2/1]">
             <Image src={v.image || "/images/venue-2x1.webp"} alt={v.name} fill sizes="(min-width:1152px) 72rem, 100vw" className="object-cover" />
           </div>
@@ -401,7 +401,7 @@ export function VenueKit({ c }: C) {
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
         {kitBanners.map((fallback, i) => (
           <Reveal key={fallback} delay={i * 0.1}>
-            <figure className="group overflow-hidden rounded-[2rem] bg-white shadow-sm">
+            <figure className="group overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-white shadow-sm">
               <div className="relative aspect-[2/1] overflow-hidden">
                 <Image src={c.merchItems[i]?.image || fallback} alt={c.merchItems[i]?.caption || (i ? "Medali" : "Jersey")} fill sizes="(min-width:640px) 50vw, 100vw" className="object-cover transition duration-500 group-hover:scale-105" />
               </div>
@@ -419,7 +419,7 @@ function KitGrid({ items, cols = "sm:grid-cols-2" }: { items: { image: string; c
     <div className={`mt-12 grid gap-6 ${cols}`}>
       {items.map((m, i) => (
         <Reveal key={i} delay={(i % 3) * 0.1}>
-          <figure className="group overflow-hidden rounded-[2rem] border border-line bg-surface">
+          <figure className="group overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] border border-line bg-surface">
             <div className="relative aspect-square overflow-hidden">
               {m.image ? (
                 <Image src={m.image} alt={m.caption} fill sizes="(min-width:640px) 50vw, 100vw" className="object-contain p-6 transition duration-500 group-hover:scale-105" />
@@ -507,7 +507,7 @@ export function RacepackVenue({ c }: C) {
             {v.schedule}
           </p>
         )}
-        {v.text && <p className="mt-4 rounded-2xl bg-surface p-4 text-sm whitespace-pre-line text-muted">{v.text}</p>}
+        {v.text && <p className="mt-4 rounded-xl sm:rounded-2xl bg-surface p-4 text-sm whitespace-pre-line text-muted">{v.text}</p>}
       </LocationCard>
     </Wrap>
   );
@@ -536,7 +536,7 @@ export function Community({ c }: C) {
               );
               return (
                 <Reveal key={i} delay={(i % 4) * 0.05}>
-                  <li className="h-full rounded-3xl border border-line bg-white p-4 transition hover:border-brand-red hover:shadow-lg">
+                  <li className="h-full rounded-2xl sm:rounded-3xl border border-line bg-white p-4 transition hover:border-brand-red hover:shadow-lg">
                     {m.websiteUrl ? <a href={m.websiteUrl} target="_blank" rel="noopener noreferrer">{inner}</a> : inner}
                   </li>
                 </Reveal>
@@ -570,7 +570,7 @@ export function Partnership({ c, kind }: C & { kind: "sponsorship" | "mediaPartn
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {benefits.map((b, i) => (
             <Reveal key={i} delay={(i % 3) * 0.08}>
-              <div className="h-full rounded-3xl border border-line bg-white p-7">
+              <div className="h-full rounded-2xl sm:rounded-3xl border border-line bg-white p-7">
                 <div className="font-display text-5xl text-brand">{String(i + 1).padStart(2, "0")}</div>
                 <h3 className="mt-3 font-display text-2xl uppercase">{b.title}</h3>
                 <p className="mt-2 whitespace-pre-line text-muted">{b.desc}</p>
@@ -645,7 +645,7 @@ export function Video({ c }: C) {
       <Heading eyebrow="Video Highlight" title={c.video.title} center />
       <Reveal delay={0.1} className="mt-10">
         {id ? (
-          <div className="relative aspect-video overflow-hidden rounded-[2rem] shadow-2xl">
+          <div className="relative aspect-video overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] shadow-2xl">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${id}`}
               title={c.video.title}
@@ -701,7 +701,7 @@ export function Festival({ c }: C) {
       <div className="mt-10 grid gap-6 md:grid-cols-3">
         {c.festivalItems.map((f, i) => (
           <Reveal key={i} delay={i * 0.08}>
-            <article className="h-full overflow-hidden rounded-3xl bg-white shadow-sm">
+            <article className="h-full overflow-hidden rounded-2xl sm:rounded-3xl bg-white shadow-sm">
               {f.image && (
                 <div className="relative aspect-[4/3]">
                   <Image src={f.image} alt={f.title} fill sizes="(min-width:768px) 33vw, 100vw" className="object-cover" />
@@ -721,7 +721,7 @@ export function Festival({ c }: C) {
 
 // `tiers` = admin-chosen tier order; the first two positions get the biggest logo tiles.
 export function Sponsors({ c, sponsors, tiers }: C & { sponsors: Sponsor[]; tiers: Tier[] }) {
-  const groups = tiers.map(([tier, label], rank) => ({ label, rank, list: sponsors.filter((s) => s.tier === tier) })).filter((g) => g.list.length);
+  const groups = tiers.map(([tier, label], rank) => ({ label, rank, grid: tier !== "presented" && tier !== "main", list: sponsors.filter((s) => s.tier === tier) })).filter((g) => g.list.length);
   const contact = c.contact.email ? `mailto:${c.contact.email}` : c.contact.whatsapp ? waUrl(c.contact.whatsapp) : "";
   return (
     <Wrap id="sponsor">
@@ -733,17 +733,20 @@ export function Sponsors({ c, sponsors, tiers }: C & { sponsors: Sponsor[]; tier
               <h3 className="flex items-center gap-4 text-center font-display text-2xl uppercase tracking-wide text-ink before:h-0.5 before:flex-1 before:bg-brand-red/25 after:h-0.5 after:flex-1 after:bg-brand-red/25 sm:text-3xl">
                 {g.label}
               </h3>
-              <ul className="mt-8 flex flex-wrap justify-center gap-4">
+              {/* mobile: 3 tiles per row (last row centered), except presented/main which keep their big tiles; sm+ unchanged */}
+              <ul className={g.grid ? "mt-8 flex flex-wrap justify-center gap-2 sm:gap-4" : "mt-8 flex flex-wrap justify-center gap-4"}>
                 {g.list.map((s) => {
                   // higher tiers get bigger logo tiles
                   const size = g.rank === 0 ? "h-32 w-64" : g.rank === 1 ? "h-24 w-48" : "h-20 w-36";
+                  const smSize = g.rank === 0 ? "sm:h-32 sm:w-64" : g.rank === 1 ? "sm:h-24 sm:w-48" : "sm:h-20 sm:w-36"; // literal for Tailwind
+                  const box = g.grid ? `aspect-[9/5] w-full sm:aspect-auto ${smSize}` : size;
                   const logo = (
-                    <span className={`relative block ${size}`}>
+                    <span className={`relative block ${box}`}>
                       <Image src={s.logo} alt={s.name} fill sizes="256px" className="object-contain" />
                     </span>
                   );
                   return (
-                    <li key={s._id} className="rounded-2xl border border-line bg-white p-4 transition hover:border-brand-red hover:shadow-lg">
+                    <li key={s._id} className={`rounded-xl sm:rounded-2xl border border-line bg-white ${g.grid ? "w-[calc((100%-1rem)/3)] p-2 sm:w-auto sm:p-4" : "p-4"} transition hover:border-brand-red hover:shadow-lg`}>
                       {s.websiteUrl ? <a href={s.websiteUrl} target="_blank" rel="noopener noreferrer" title={s.name}>{logo}</a> : logo}
                     </li>
                   );
@@ -768,7 +771,7 @@ export function Closing({ c }: C) {
   const cta = ctaFor(c);
   return (
     <section className="px-5 pb-20">
-      <Reveal className="bg-brand relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] px-8 py-16 text-center text-white sm:py-24">
+      <Reveal className="bg-brand relative mx-auto max-w-6xl overflow-hidden rounded-3xl sm:rounded-[2.5rem] px-8 py-16 text-center text-white sm:py-24">
         <span className="pointer-events-none absolute -bottom-16 left-1/2 -translate-x-1/2 font-display text-[14rem] leading-none whitespace-nowrap text-white/10">
           NEXT RUN
         </span>
