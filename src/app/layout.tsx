@@ -18,6 +18,7 @@ const jakarta = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: "TopsellRun — Run Together, Celebrate Together",
   description: "Event lari tahunan TopsellRun. Info kategori lomba, venue, jersey & medali, galeri, dan pendaftaran.",
 };
