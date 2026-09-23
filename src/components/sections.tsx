@@ -398,19 +398,35 @@ export function VenueKit({ c }: C) {
           </figcaption>
         </figure>
       </Reveal>
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        {kitBanners.map((fallback, i) => (
-          <Reveal key={fallback} delay={i * 0.1}>
-            <figure className="group overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-white shadow-sm">
+      <KitBanners items={c.merchItems} className="mt-6" />
+    </Wrap>
+  );
+}
+
+// Jersey/medali banners: 2:1 artwork, same tiles on Home and /medal-jersey-racepack.
+function KitBanners({ items, className = "mt-12" }: { items: { image: string; caption: string }[]; className?: string }) {
+  const slots = Math.max(items.length, kitBanners.length);
+  return (
+    <div className={`grid gap-6 sm:grid-cols-2 ${className}`}>
+      {Array.from({ length: slots }, (_, i) => {
+        const caption = items[i]?.caption || (i ? "Medali" : "Jersey");
+        const image = items[i]?.image || kitBanners[i]; // slots past the two defaults have no fallback artwork
+        return (
+          <Reveal key={i} delay={(i % 3) * 0.1}>
+            <figure className="group overflow-hidden rounded-[1.25rem] bg-white shadow-sm sm:rounded-[2rem]">
               <div className="relative aspect-[2/1] overflow-hidden">
-                <Image src={c.merchItems[i]?.image || fallback} alt={c.merchItems[i]?.caption || (i ? "Medali" : "Jersey")} fill sizes="(min-width:640px) 50vw, 100vw" className="object-cover transition duration-500 group-hover:scale-105" />
+                {image ? (
+                  <Image src={image} alt={caption} fill sizes="(min-width:640px) 50vw, 100vw" className="object-cover transition duration-500 group-hover:scale-105" />
+                ) : (
+                  <Placeholder label="Segera dirilis" />
+                )}
               </div>
-              <figcaption className="px-6 py-5 font-display text-2xl uppercase">{c.merchItems[i]?.caption || (i ? "Medali" : "Jersey")}</figcaption>
+              <figcaption className="px-6 py-5 font-display text-2xl uppercase">{caption}</figcaption>
             </figure>
           </Reveal>
-        ))}
-      </div>
-    </Wrap>
+        );
+      })}
+    </div>
   );
 }
 
@@ -450,7 +466,7 @@ export function Merch({ c }: C) {
   return (
     <Wrap id="merch">
       <IntroHeading eyebrow="Race Kit" title={c.merch.title} text={c.merch.text} />
-      <KitGrid items={c.merchItems} />
+      <KitBanners items={c.merchItems} />
     </Wrap>
   );
 }
@@ -730,7 +746,7 @@ export function Sponsors({ c, sponsors, tiers }: C & { sponsors: Sponsor[]; tier
         {groups.length ? (
           groups.map((g) => (
             <Reveal key={g.label}>
-              <h3 className="flex items-center gap-4 text-center font-display text-2xl uppercase tracking-wide text-ink before:h-0.5 before:flex-1 before:bg-brand-red/25 after:h-0.5 after:flex-1 after:bg-brand-red/25 sm:text-3xl">
+              <h3 className="flex items-center gap-4 text-center text-sm font-semibold uppercase tracking-[0.2em] text-muted before:h-px before:flex-1 before:bg-brand-red/25 after:h-px after:flex-1 after:bg-brand-red/25 sm:text-base">
                 {g.label}
               </h3>
               {/* mobile: 3 tiles per row (last row centered), except presented/main which keep their big tiles; sm+ unchanged */}
