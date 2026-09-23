@@ -795,9 +795,19 @@ export function Footer({ c }: C) {
       <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
         <div>
           <HomeLogo className="h-16 w-auto" />
-          <p className="mt-3 text-sm text-muted">
-            Presented by <strong className="text-ink">{k.presentedBy}</strong>
-          </p>
+          <p className="mt-6 text-xs font-bold uppercase tracking-widest text-muted">Presented by</p>
+          <ul className="mt-3 flex gap-3">
+            {[
+              ["Topsell", "/images/sponsors/topsell.webp"],
+              ["Samsung", "/images/sponsors/samsung.webp"],
+            ].map(([name, src]) => (
+              <li key={name} className="rounded-xl border border-line bg-white px-4 py-3 shadow-sm">
+                <span className="relative block h-7 w-28">
+                  <Image src={src} alt={name} fill sizes="112px" className="object-contain" />
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className={`text-sm ${k.whatsapp || k.email ? "" : "hidden"}`}>
           <p className="font-bold uppercase tracking-widest text-muted">Kontak</p>
